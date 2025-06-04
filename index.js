@@ -1,33 +1,34 @@
 /* eslint-disable no-mixed-operators */
-/* eslint-disable  func-names */
-/* eslint-disable  no-console */
+/* eslint-disable func-names */
+/* eslint-disable no-console */
 
 const Alexa = require('ask-sdk-core');
 
+// Configuración del stream
 const STREAMS = [
   {
-    'token': 'radio-cocijo-tlacolula',
-    'url': 'https://tlacosonido.top/listen/radio-cocijo/radiococijo96.mp3',
-    'metadata': {
-      'title': 'Radio Cocijo',
-      'subtitle': 'La voz del Rayo',
-      'art': {
-        'sources': [
+    token: 'es-tendencia-tlacolula',
+    url: 'https://tlacosonido.top/listen/es_tendencia/radio-320.mp3',
+    metadata: {
+      title: 'Es Tendencia',
+      subtitle: 'La estación en línea que te conecta con lo último en música, noticias y tendencias.',
+      art: {
+        sources: [
           {
-            'contentDescription': 'Radio Cocijo',
-            'url': 'https://radiococijo.com/wp-content/uploads/2025/05/ChatGPT-Image-12-may-2025-23_07_27.png',
-            'widthPixels': 512,
-            'heightPixels': 512,
+            contentDescription: 'Es Tendencia',
+            url: 'https://radiococijo.com/wp-content/uploads/2025/06/Logo-512-x-512-px.png',
+            widthPixels: 512,
+            heightPixels: 512,
           },
         ],
       },
-      'backgroundImage': {
-        'sources': [
+      backgroundImage: {
+        sources: [
           {
-            'contentDescription': 'Radio Cocijo',
-            'url': 'https://radiococijo.com/wp-content/uploads/2025/06/Fondo-Alexa.png',
-            'widthPixels': 1200,
-            'heightPixels': 800,
+            contentDescription: 'Es Tendencia',
+            url: 'https://radiococijo.com/wp-content/uploads/2025/06/Fondo-Alexa.png',
+            widthPixels: 1200,
+            heightPixels: 800,
           },
         ],
       },
@@ -35,95 +36,80 @@ const STREAMS = [
   },
 ];
 
+// Handlers
+const LaunchRequestHandler = {
+  canHandle(handlerInput) {
+    return handlerInput.requestEnvelope.request.type === 'LaunchRequest';
+  },
+  handle(handlerInput) {
+    return handlerInput.responseBuilder
+      .speak('Bienvenido a Es Tendencia. Di "reproducir" para comenzar.')
+      .reprompt('Di "reproducir" para escuchar la estación.')
+      .getResponse();
+  },
+};
+
 const PlayStreamIntentHandler = {
   canHandle(handlerInput) {
-    return handlerInput.requestEnvelope.request.type === 'LaunchRequest'
-      || handlerInput.requestEnvelope.request.type === 'IntentRequest'
-      && (
-        handlerInput.requestEnvelope.request.intent.name === 'PlayStreamIntent'
-        || handlerInput.requestEnvelope.request.intent.name === 'AMAZON.ResumeIntent'
-        || handlerInput.requestEnvelope.request.intent.name === 'AMAZON.LoopOnIntent'
-        || handlerInput.requestEnvelope.request.intent.name === 'AMAZON.NextIntent'
-        || handlerInput.requestEnvelope.request.intent.name === 'AMAZON.PreviousIntent'
-        || handlerInput.requestEnvelope.request.intent.name === 'AMAZON.RepeatIntent'
-        || handlerInput.requestEnvelope.request.intent.name === 'AMAZON.ShuffleOnIntent'
-        || handlerInput.requestEnvelope.request.intent.name === 'AMAZON.StartOverIntent'
-      );
+    const { intent } = handlerInput.requestEnvelope.request;
+    const supportedIntents = [
+      'PlayStreamIntent',
+      'AMAZON.ResumeIntent',
+      'AMAZON.NextIntent',
+      'AMAZON.PreviousIntent',
+    ];
+    return handlerInput.requestEnvelope.request.type === 'IntentRequest' && 
+           intent && supportedIntents.includes(intent.name);
   },
   handle(handlerInput) {
     const stream = STREAMS[0];
-
-    handlerInput.responseBuilder
-      .speak(`<speak><audio src="https://radiococijo.com/wp-content/uploads/2025/06/Radio-Cocijo-Intro.mp3"/> Bienvenido a nuestra transmisión en vivo</speak>`)
-      .addAudioPlayerPlayDirective('REPLACE_ALL', stream.url, stream.token, 0, null, stream.metadata);
-
     return handlerInput.responseBuilder
+      .speak('Reproduciendo Es Tendencia.')
+      .addAudioPlayerPlayDirective('REPLACE_ALL', stream.url, stream.token, 0, null, stream.metadata)
       .getResponse();
   },
 };
 
 const HelpIntentHandler = {
   canHandle(handlerInput) {
-    return handlerInput.requestEnvelope.request.type === 'IntentRequest'
-      && handlerInput.requestEnvelope.request.intent.name === 'AMAZON.HelpIntent';
+    return handlerInput.requestEnvelope.request.type === 'IntentRequest' &&
+           handlerInput.requestEnvelope.request.intent.name === 'AMAZON.HelpIntent';
   },
   handle(handlerInput) {
-    const speechText = 'Esta skill sirve para escucharnos en vivo desde alexa, así mismo tener contacto con el mundo.';
-
     return handlerInput.responseBuilder
-      .speak(speechText)
-      .reprompt(speechText)
+      .speak('Di "reproducir" para escuchar la radio o "detener" para parar.')
+      .reprompt('¿Necesitas ayuda? Di "reproducir" o "detener".')
       .getResponse();
   },
 };
 
 const AboutIntentHandler = {
   canHandle(handlerInput) {
-    return handlerInput.requestEnvelope.request.type === 'IntentRequest'
-      && handlerInput.requestEnvelope.request.intent.name === 'AboutIntent';
+    return handlerInput.requestEnvelope.request.type === 'IntentRequest' &&
+           handlerInput.requestEnvelope.request.intent.name === 'AboutIntent';
   },
   handle(handlerInput) {
-    const speechText = 'Solo deberas indicar reproducir, abre, pon, reproduce, Radio Cocijo y alexa lo hará.';
-
     return handlerInput.responseBuilder
-      .speak(speechText)
-      .reprompt(speechText)
+      .speak('Es Tendencia Radio te ofrece la mejor música y noticias. Di "reproducir" para empezar.')
       .getResponse();
   },
 };
 
 const CancelAndStopIntentHandler = {
   canHandle(handlerInput) {
-    return handlerInput.requestEnvelope.request.type === 'IntentRequest'
-      && (
-        handlerInput.requestEnvelope.request.intent.name === 'AMAZON.StopIntent'
-        || handlerInput.requestEnvelope.request.intent.name === 'AMAZON.PauseIntent'
-        || handlerInput.requestEnvelope.request.intent.name === 'AMAZON.CancelIntent'
-        || handlerInput.requestEnvelope.request.intent.name === 'AMAZON.LoopOffIntent'
-        || handlerInput.requestEnvelope.request.intent.name === 'AMAZON.ShuffleOffIntent'
-      );
+    const { intent } = handlerInput.requestEnvelope.request;
+    const supportedIntents = [
+      'AMAZON.CancelIntent',
+      'AMAZON.StopIntent',
+      'AMAZON.PauseIntent',
+    ];
+    return handlerInput.requestEnvelope.request.type === 'IntentRequest' && 
+           intent && supportedIntents.includes(intent.name);
   },
   handle(handlerInput) {
-    handlerInput.responseBuilder
-      .addAudioPlayerClearQueueDirective('CLEAR_ALL')
-      .addAudioPlayerStopDirective();
-
     return handlerInput.responseBuilder
-      .getResponse();
-  },
-};
-
-const PlaybackStoppedIntentHandler = {
-  canHandle(handlerInput) {
-    return handlerInput.requestEnvelope.request.type === 'PlaybackController.PauseCommandIssued'
-      || handlerInput.requestEnvelope.request.type === 'AudioPlayer.PlaybackStopped';
-  },
-  handle(handlerInput) {
-    handlerInput.responseBuilder
-      .addAudioPlayerClearQueueDirective('CLEAR_ALL')
-      .addAudioPlayerStopDirective();
-
-    return handlerInput.responseBuilder
+      .addAudioPlayerStopDirective()
+      .speak('Deteniendo la reproducción.')
       .getResponse();
   },
 };
@@ -133,11 +119,16 @@ const PlaybackStartedIntentHandler = {
     return handlerInput.requestEnvelope.request.type === 'AudioPlayer.PlaybackStarted';
   },
   handle(handlerInput) {
-    handlerInput.responseBuilder
-      .addAudioPlayerClearQueueDirective('CLEAR_ENQUEUED');
+    return handlerInput.responseBuilder.getResponse();
+  },
+};
 
-    return handlerInput.responseBuilder
-      .getResponse();
+const PlaybackStoppedIntentHandler = {
+  canHandle(handlerInput) {
+    return handlerInput.requestEnvelope.request.type === 'AudioPlayer.PlaybackStopped';
+  },
+  handle(handlerInput) {
+    return handlerInput.responseBuilder.getResponse();
   },
 };
 
@@ -146,10 +137,8 @@ const SessionEndedRequestHandler = {
     return handlerInput.requestEnvelope.request.type === 'SessionEndedRequest';
   },
   handle(handlerInput) {
-    console.log(`Session ended with reason: ${handlerInput.requestEnvelope.request.reason}`);
-
-    return handlerInput.responseBuilder
-      .getResponse();
+    console.log(`Sesión finalizada: ${handlerInput.requestEnvelope.request.reason}`);
+    return handlerInput.responseBuilder.getResponse();
   },
 };
 
@@ -158,9 +147,21 @@ const ExceptionEncounteredRequestHandler = {
     return handlerInput.requestEnvelope.request.type === 'System.ExceptionEncountered';
   },
   handle(handlerInput) {
-    console.log(`Session ended with reason: ${handlerInput.requestEnvelope.request.reason}`);
+    console.log('Error del sistema:', handlerInput.requestEnvelope.request.error);
+    return handlerInput.responseBuilder.getResponse();
+  },
+};
 
-    return true;
+const FallbackIntentHandler = {
+  canHandle(handlerInput) {
+    return handlerInput.requestEnvelope.request.type === 'IntentRequest' &&
+           handlerInput.requestEnvelope.request.intent.name === 'AMAZON.FallbackIntent';
+  },
+  handle(handlerInput) {
+    return handlerInput.responseBuilder
+      .speak('No entendí eso. Di "reproducir" o "ayuda".')
+      .reprompt('Di "reproducir" para escuchar la radio.')
+      .getResponse();
   },
 };
 
@@ -169,25 +170,26 @@ const ErrorHandler = {
     return true;
   },
   handle(handlerInput, error) {
-    console.log(`Error handled: ${error.message}`);
-    console.log(handlerInput.requestEnvelope.request.type);
+    console.log('Error:', error.message);
     return handlerInput.responseBuilder
+      .speak('Ocurrió un error. Por favor, inténtalo de nuevo.')
       .getResponse();
   },
 };
 
-const skillBuilder = Alexa.SkillBuilders.custom();
-
-exports.handler = skillBuilder
+// Exportación con todos los handlers
+exports.handler = Alexa.SkillBuilders.custom()
   .addRequestHandlers(
+    LaunchRequestHandler,
     PlayStreamIntentHandler,
-    PlaybackStartedIntentHandler,
-    CancelAndStopIntentHandler,
-    PlaybackStoppedIntentHandler,
-    AboutIntentHandler,
     HelpIntentHandler,
-    ExceptionEncounteredRequestHandler,
+    AboutIntentHandler,
+    CancelAndStopIntentHandler,
+    PlaybackStartedIntentHandler,
+    PlaybackStoppedIntentHandler,
     SessionEndedRequestHandler,
+    ExceptionEncounteredRequestHandler,
+    FallbackIntentHandler
   )
   .addErrorHandlers(ErrorHandler)
   .lambda();
