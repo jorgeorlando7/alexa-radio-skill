@@ -1,7 +1,7 @@
 {
     "interactionModel": {
         "languageModel": {
-            "invocationName": "radio cocijo",
+            "invocationName": "es tendencia",
             "intents": [
                 {
                     "name": "AMAZON.NavigateHomeIntent",
@@ -11,13 +11,17 @@
                     "name": "PlayStreamIntent",
                     "slots": [],
                     "samples": [
+                        "reproducir",
+                        "quiero escuchar la estación",
+                        "escuchar la radio",
+                        "pon la radio",
+                        "dale play a",
+                        "empieza",
+                        "reproduce",
                         "pon",
                         "abre",
-                        "reproduce",
-                        "empieza",
                         "reproduce la emisora",
-                        "dale play a",
-                        "dale al play"
+                        "quiero escuchar"
                     ]
                 },
                 {
