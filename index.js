@@ -6,7 +6,7 @@ const Alexa = require('ask-sdk-core');
 
 const STREAMS = [
   {
-    'token': 'radio-pere-noel',
+    'token': 'radio-cocijo-tlacolula',
     'url': 'https://tlacosonido.top/listen/radio-cocijo/radiococijo96.mp3',
     'metadata': {
       'title': 'Radio Cocijo',
